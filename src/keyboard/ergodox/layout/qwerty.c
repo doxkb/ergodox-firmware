@@ -69,7 +69,7 @@ _altR,     _enter
                                                            _del,    _altL,
                                                        _end, _home,  _ctrlL,
 // right hand
-      _F12,        _F6,     _F7,        _F8,        _F9,          _F10, 0,
+      _F12,        _F6,     _F7,        _F8,        _F9,          _F10, _numLock_kp,
          2,          0,   _dash,     _lt_kp,     _gt_kp, _currencyUnit, 0,
             _backslash,       0, _parenL_kp, _parenR_kp,        _equal, 0,
          0,    _mul_kp,       0,          0,          0,             0, 0,
