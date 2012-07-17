@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- * linked list
+ * linked list : code
  * ----------------------------------------------------------------------------
  * Copyright (c) 2012 Ben Blazak <benblazak.dev@gmail.com>
  * Released under The MIT License (MIT) (see "license.md")
@@ -8,149 +8,227 @@
 
 
 #include <stdlib.h>
-#include "lib/data-types.h"
+#include "lib/data-types/common.h"
 
 #include "linked-list.h"
 
 
-// convenience macros (undefined later)
-#define _NEW_STRUCT_POINTER(type, name)	\
-	struct type * name = (struct type *) malloc(sizeof(struct type))
+// local macros (undefined later)
+#define  _NEW_POINTER(type, name)  type * name = (type *) malloc(sizeof(type))
+#define  _list_t                   linked_list_t
+#define  _node_t                   linked_list_node_t
+#define  _data_t                   LINKED_LIST_DATA_TYPE
 
 
-struct linked_list * linked_list_new(void) {
-	_NEW_STRUCT_POINTER(linked_list, list);
+/*
+ * new()
+ *
+ * Returns
+ * - success: a pointer to a new linked list
+ * - failure: NULL
+ */
+_list_t * linked_list_new(void) {
+	_NEW_POINTER(_list_t, list);
 	if (!list) return NULL;
 
 	list->head = NULL;
 	list->tail = NULL;
 
-	list->number_of_elements = 0;
+	list->length = 0;
 	return list;
 }
 
-struct linked_list * linked_list_add_head(
-		struct linked_list * list,
-		LINKED_LIST_DATA_TYPE data ) {
-
-	_NEW_STRUCT_POINTER(linked_list_node, node);
+/*
+ * insert()
+ *
+ * Arguments
+ * - index: the index of the position that the new node will occupy.  if index
+ *   is negative, we set index += length (as in Python).  so:
+ *     -  0 => the first node in the list
+ *     -  1 => the second node in the list
+ *     - -1 => the last node in the list
+ *     - -2 => the second from the last node in the list
+ *   - out of bounds positions wrap around, so:
+ *     -  [length]   =>  0 => the first node in the list
+ *     - -[length+1] => -1 => the last node in the list
+ *
+ * Returns
+ * - success: the pointer to the list that was passed
+ * - failure: NULL
+ *
+ * Notes
+ * - in this function, 'list->length' is incremented before the index is
+ *   calculated|used, so that we have a consistent way to think of adding an
+ *   element to the end of the list
+ */
+_list_t * linked_list_insert(_list_t * list, int index, _data_t data) {
+	_NEW_POINTER(_node_t, node);
 	if (!node) return NULL;
 
-	node->data = data;
-	node->next = list->head;
-	list->head = node;
-	if (list->number_of_elements == 0)
-		list->tail = node;
-
-	list->number_of_elements++;
-	return list;
-}
-
-struct linked_list * linked_list_add_tail(
-		struct linked_list * list,
-		LINKED_LIST_DATA_TYPE data ) {
-
-	_NEW_STRUCT_POINTER(linked_list_node, node);
-	if (!node) return NULL;
+	list->length++;
 
 	node->data = data;
-	node->next = NULL;
-	if (list->number_of_elements == 0)
+
+	if (list->length == 1) {
+		// insert as only node (no others exist yet)
 		list->head = node;
-	else
-		list->tail->next = node;
-	list->tail = node;
+		list->tail = node;
+		node->next = NULL;
+	} else {
+		// find positive, in-bounds index
+		index = index % list->length;
+		if (index < 0)
+			index += list->length;
 
-	list->number_of_elements++;
+		if (index == 0) {
+			// insert as first node
+			node->next = list->head;
+			list->head = node;
+		} else if (index == list->length-1) {
+			// insert as last node
+			list->tail->next = node;
+			list->tail = node;
+			node->next = NULL;
+		} else {
+			// insert as other node
+			_node_t * previous = list->head;
+			for (int i=1; i<index; i++)
+				previous = previous->next;
+			node->next = previous->next;
+			previous->next = node;
+		}
+	}
+
 	return list;
 }
 
-LINKED_LIST_DATA_TYPE linked_list_pop_head(struct linked_list * list) {
-	if (list->number_of_elements == 0)
-		return 0;
+/*
+ * peek()
+ *
+ * Arguments
+ * - index: [see 'insert()']
+ *
+ * Returns
+ * - success: the data field of the node at the given index
+ * - failure: (_data_t) 0
+ */
+_data_t linked_list_peek(_list_t * list, int index) {
+	// if: no nodes exist
+	if (list->length == 0)
+		return (_data_t) 0;
 
-	struct linked_list_node node = {
-		.data = list->head->data,
-		.next = list->head->next
-	};
+	// find positive, in-bounds index
+	index = index % list->length;
+	if (index < 0)
+		index += list->length;
 
-	free(list->head);
+	// if: last node
+	if (index == list->length-1)
+		return list->tail->data;
 
-	if (list->number_of_elements == 1) {
-		list->head = NULL;
-		list->tail = NULL;
-	} else {
-		list->head = node.next;
-	}
-
-	list->number_of_elements--;
-	return node.data;
-}
-
-// note: this function is inefficient for singly linked lists: it has O(n) time
-// instead of O(1) time like most of the other functions.  but it's not needed
-// for implementing stacks or queues, so i don't anticipate it being used all
-// that much.  it's here for completeness.
-LINKED_LIST_DATA_TYPE linked_list_pop_tail(struct linked_list * list) {
-	if (list->number_of_elements == 0)
-		return 0;
-
-	struct linked_list_node node = {
-		.data = list->tail->data,
-		.next = list->tail->next
-	};
-
-	free(list->tail);
-
-	if (list->number_of_elements == 1) {
-		list->head = NULL;
-		list->tail = NULL;
-	} else {
-		list->tail = list->head;
-		for (uint8_t i=2; i<(list->number_of_elements); i++)
-			list->tail = list->tail->next;
-		list->tail->next = NULL;
-	}
-
-	list->number_of_elements--;
-	return node.data;
-}
-
-LINKED_LIST_DATA_TYPE linked_list_read(
-			struct linked_list * list,
-			uint8_t position ) {
-
-	if (position < 1 || position > (list->number_of_elements))
-		return 0;
-
-	struct linked_list_node * node = list->head;
-	for (uint8_t i=1; i<position; i++)
+	// else
+	_node_t * node = list->head;
+	for (int i=0; i<index; i++)
 		node = node->next;
-
 	return node->data;
 }
 
-struct linked_list * linked_list_copy(struct linked_list * list) {
-	_NEW_STRUCT_POINTER(linked_list, copy);
+/*
+ * pop()
+ *
+ * Arguments
+ * - index: [see 'insert()']
+ *
+ * Returns
+ * - success: the data field of the node at the given index
+ * - failure: (_data_t) 0
+ */
+_data_t linked_list_pop(_list_t * list, int index) {
+	// if: no nodes exist
+	if (list->length == 0)
+		return (_data_t) 0;
 
-	for (uint8_t i=1; i<=(list->number_of_elements); i++)
-		linked_list_add_tail(copy, linked_list_read(list, i));
+	// find positive, in-bounds index
+	index = index % list->length;
+	if (index < 0)
+		index += list->length;
+
+	// vars
+	_data_t data;
+	_node_t * node;
+
+	if (index == 0) {
+		// pop first node
+		data = list->head->data;
+		node = list->head;
+		list->head = node->next;
+	} else {
+		// find the index-1'th node
+		_node_t * previous;
+		previous = list->head;
+		for (int i=1; i<index; i++)
+			previous = previous->next;
+
+		// if: last node
+		if (index == list->length-1)
+			list->tail = previous;
+
+		// pop the node at index
+		data = previous->next->data;
+		node = previous->next;
+		previous->next = node->next;
+	}
+
+	free(node);
+
+	list->length--;
+	return data;
+}
+
+/*
+ * copy()
+ *
+ * Returns
+ * - success: a new pointer to a (deep) copy of the list that was passed
+ * - failure: NULL
+ */
+_list_t * linked_list_copy(_list_t * list) {
+	_list_t * copy = linked_list_new();
+	if (!copy) return NULL;
+
+	bool error;
+	_node_t * node = list->head;
+	for (int i=0; i<(list->length); i++) {
+		error = ! linked_list_insert(copy, -1, node->data);
+		if (error) {
+			linked_list_free(copy);
+			return NULL;
+		}
+		node = node->next;
+	}
 
 	return copy;
 }
 
-
-// note: this is implemented inefficiently (using ...pop_head(), which does
-// extra work).  but that makes things simpler, and i don't anticipate using it
-// all that often.
-void linked_list_free(struct linked_list * list) {
-	while ((list->number_of_elements) > 0)
-		linked_list_pop_head(list);
-
+/*
+ * free()
+ * - Free the memory allocated to all the nodes, then free the memory allocated
+ *   to the list.
+ */
+void linked_list_free(_list_t * list) {
+	_node_t * node;
+	for (int i=0; i<(list->length); i++) {
+		node = list->head;
+		list->head = list->head->next;
+		free(node);
+	}
 	free(list);
 }
 
 
-// convenience macros (undefined here)
-#undef _NEW_STRUCT_POINTER
+// local macros (undefined here)
+#undef _NEW_POINTER
+#undef _list_t
+#undef _node_t
+#undef _data_t
 
