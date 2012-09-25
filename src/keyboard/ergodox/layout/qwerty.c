@@ -47,51 +47,46 @@ uint8_t PROGMEM _kb_layout[KB_LAYERS][KB_ROWS][KB_COLUMNS] = {
 // unused
 0,
 // left hand
-_grave,    _1,      _2,      _3,      _4,      _5,  _equal,
-_tab,      _Q,      _W,      _E,      _R,      _T,  _esc,
-_ctrlL,    _A,      _S,      _D,      _F,      _G,_shiftL,
-   _Z,      _X,      _C,      _V,      _B,  1,_guiL,
-     _arrowL, _arrowU, _arrowD, _arrowR,
-                                                 _bs,
-                                                 _del,     _altL,
-                                              _end, _home, _ctrlL,
+   _grave,      _1,      _2,      _3,      _4,      _5, _equal,
+   _tab,        _Q,      _W,      _E,      _R,      _T,   _esc,
+   _ctrlL,      _A,      _S,      _D,      _F,      _G,
+  _shiftL,      _Z,      _X,      _C,      _V,      _B,      1,
+    _guiL, _arrowL, _arrowU, _arrowD, _arrowR,
+                                                   _bs,      0,
+                                                  _del,      0, _altL,
+                                                  _end,  _home,  _ctrlL,
 // right hand
    _backslash,      _6,      _7,      _8,      _9,         _0,     _dash,
     _bracketL,      _Y,      _U,      _I,      _O,         _P, _bracketR,
                     _H,      _J,      _K,      _L, _semicolon,    _quote,
             1,      _N,      _M,  _comma, _period,     _slash,   _shiftR,
                _arrowL, _arrowD, _arrowU, _arrowR,      _guiR,
-_grave,    _1,      _2,      _3,      _4,      _5,  _equal,
-_tab,      _Q,      _W,      _E,      _R,      _T,  _esc,
-_ctrlL,    _A,      _S,      _D,      _F,      _G,_shiftL,
-   _Z,      _X,      _C,      _V,      _B,  1,_guiL,
-     _arrowL, _arrowU, _arrowD, _arrowR,
-                                                0,  _bs,
-                                                 _del,     _altL,
-                                              _end, _home, _ctrlL,// right hand
+             0, _space,
+_altR,      0, _enter,
+ _ctrlR, _pageU, _pageD ),
 	// --------------------------------------------------------------------
 	KB_MATRIX_LAYER(  // layout: layer 1: function and symbol keys
 // unused
 0,
 // left hand
--1,        _F1,        _F2,       _F3,       _F4,       _F5, _F11,
- _tab, _braceL_kp, _braceR_kp, _bracketL, _bracketR,         0, _esc,
- _ctrlL, _semicolon,     _slash,     _dash,         0, _colon_kp,
+-1,        _F1,        _F2,       _F3,       _F4,       _F5,  _F11,
+ 0, _braceL_kp, _braceR_kp, _bracketL, _bracketR,         0,  _esc,
+ 0, _semicolon,     _slash,     _dash,         0, _colon_kp,
  2,          0,          0,         0,         0,         0,     0,
- _application,    _arrowL,    _arrowU,   _arrowD,   _arrowR,
-                                                            _bs, 0
-                                                           _del,    _altL,
+ 0,    _arrowL,    _arrowU,   _arrowD,   _arrowR,
+                                                        _bs,     0,
+                                                       _del,     0, _altL,
                                                        _end, _home,  _ctrlL,
 // right hand
-      _F12,        _F6,     _F7,        _F8,        _F9,          _F10, _numLock_kp,
-         2,          0,   _dash,     _print,     _gt_kp,		_pause, 0,
-            _backslash,       0, _parenL_kp, _parenR_kp,        _equal, 0,
-         0,    _mul_kp,       0,          0,          0,             0, 0,
-                        _arrowL,    _arrowD,    _arrowU,       _arrowR, _application,
-           _space,
-_altR,    _enter,
- _ctrlR, _pageU, _pageD ),
-// ----------------------------------------------------------------------------
+          _F12,        _F6,     _F7,        _F8,        _F9,          _F10, 0,
+             2,          0,   _dash,     _print,     _gt_kp,		_pause, 0,
+                _backslash,       0, _parenL_kp, _parenR_kp,        _equal, 0,
+             0,    _mul_kp,       0,          0,          0,             0, 0,
+                            _arrowL,    _arrowD,    _arrowU,       _arrowR, _application,
+             0,     _space,
+_altR,      0,     _enter,
+ _ctrlR, _pageU,     _pageD ),
+	// --------------------------------------------------------------------
 	KB_MATRIX_LAYER(  // layout: layer 2: numpad
 // unused
 0,
@@ -276,4 +271,3 @@ f_np_on,   NULL,   NULL,   NULL,   NULL,   NULL,   NULL,   NULL,
 f_np_of,   NULL,   NULL,   NULL,   NULL,   NULL,   NULL,   NULL )
 	// --------------------------------------------------------------------
 };
-
